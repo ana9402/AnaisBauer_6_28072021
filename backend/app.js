@@ -1,8 +1,7 @@
 const express = require('express');
-
 const mongoose = require('mongoose');
-
-const app = express();
+const bodyParser = require('body-parser');
+const sauceRoutes = require('./routes/sauce');
 
 // Connexion à la base de données
 mongoose.connect('mongodb+srv://website:WQxCxfsDGIHGAluc@cluster0.fjllj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', 
@@ -12,23 +11,18 @@ mongoose.connect('mongodb+srv://website:WQxCxfsDGIHGAluc@cluster0.fjllj.mongodb.
 .then(() => console.log('Connected to MongoDB !'))
 .catch(() => console.log('Connection to MongoDB failed !'));
 
+const app = express();
+
+// CORS
 app.use((req, res, next) => {
-    console.log("Requête reçue !")
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     next();
 });
 
-app.use((req, res, next) => {
-    res.status(201);
-    next();
-});
-    
-app.use((req, res, next) => {
-    res.json({ message: 'La requête a bien été reçue !' });
-    next();
-});
+app.use(bodyParser.json());
 
-app.use((req, res, next) => {
-    console.log('Réponse envoyée avec succès !');
-});
+app.use('/api/sauces', sauceRoutes);
 
 module.exports = app;
