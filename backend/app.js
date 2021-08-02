@@ -1,6 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const bodyParser = require('body-parser');
+const helmet = require('helmet'); 
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 
@@ -14,6 +14,8 @@ mongoose.connect('mongodb+srv://website:WQxCxfsDGIHGAluc@cluster0.fjllj.mongodb.
 
 const app = express();
 
+app.use(helmet());
+
 // CORS
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,9 +24,10 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(bodyParser.json());
-
+// Intégrations des routes
+app.use(express.json());
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
+
 
 module.exports = app;

@@ -4,12 +4,9 @@ const Sauce = require('../models/sauce');
 exports.createSauce = (req, res, next) => {
     delete req.body._id;
     const sauce = new Sauce({
-        ...req.body,
-        likes: 0,
-        dislikes: 0,
-        usersLiked: [],
-        usersDisliked: []
+        ...req.body
     });
+    console.log(req.body)
     sauce.save()
     .then(() => res.status(201).json({message: "Sauce enregistrée !"}))
     .catch(error => res.status(400).json({error}));
