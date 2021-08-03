@@ -1,13 +1,21 @@
-const Sauce = require('../models/sauce');
-const fs = require('fs');
+// IMPORTATIONS ----------
+const Sauce = require('../models/sauce'); // Schéma Sauce
+const fs = require('fs'); // File System : gestionnaire de fichiers
 
-// POST
+
+// ROUTES ----------
+
+// POST : Ajouter une sauce
 exports.createSauce = (req, res, next) => {
     const sauceObject = JSON.parse(req.body.sauce);
     delete sauceObject._id;
     const sauce = new Sauce({
         ...sauceObject,
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
+        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`,
+        likes: 0,
+        dislikes: 0,
+        usersLiked: [],
+        usersDisliked: []
     });
     console.log(req.body)
     sauce.save()
@@ -15,7 +23,7 @@ exports.createSauce = (req, res, next) => {
     .catch(error => res.status(400).json({error}));
 }
 
-// PUT
+// PUT : Modifier une sauce
 exports.modifySauce = (req, res, next) => {
     const sauceObject = req.file ?
     {
@@ -27,7 +35,7 @@ exports.modifySauce = (req, res, next) => {
     .catch(error => res.status(400).json({error}));
 }
 
-// DELETE
+// DELETE : Supprimer une sauce
 exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({_id: req.params.id})
     .then(sauce => {
@@ -41,7 +49,7 @@ exports.deleteSauce = (req, res, next) => {
     .catch(error => res.status(500).json({error}));
 };
 
-// GET
+// GET : Afficher les sauces ou une sauce spécifique
 exports.getAllSauces = (req, res, next) => {
     Sauce.find()
     .then(sauces => res.status(200).json(sauces))

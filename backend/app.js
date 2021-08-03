@@ -1,11 +1,14 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const helmet = require('helmet'); 
-const path = require('path');
+// IMPORTATIONS ----------
+const express = require('express'); // Framework pour le développement du serveur
+const mongoose = require('mongoose'); // Bibliothèque ODM pour la création des schémas
+const helmet = require('helmet'); // Package pour la sécurisation des headers HTTP
+const path = require('path'); // Module NodeJS pour la gestion des chemins d'accès à des fichiers
+// Routes
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 
-// Connexion à la base de données
+
+// CONNEXION A LA BASE DE DONNEES ----------
 mongoose.connect('mongodb+srv://website:WQxCxfsDGIHGAluc@cluster0.fjllj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', 
     {useNewUrlParser: true,
     useUnifiedTopology: true }
@@ -13,11 +16,14 @@ mongoose.connect('mongodb+srv://website:WQxCxfsDGIHGAluc@cluster0.fjllj.mongodb.
 .then(() => console.log('Connected to MongoDB !'))
 .catch(() => console.log('Connection to MongoDB failed !'));
 
+
+// CREATION DE L'APPLICATION EXPRESS ----------
 const app = express();
 
+// Activation de la protection Helmet
 app.use(helmet());
 
-// CORS
+// Gestion du CORS
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content, Accept, Content-Type, Authorization');
@@ -32,4 +38,5 @@ app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
 
 
+// EXPORTATION ----------
 module.exports = app;

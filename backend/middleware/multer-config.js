@@ -1,5 +1,8 @@
-// Importation de multer
+// IMPORTATION ----------
 const multer = require('multer')
+
+
+// CONFIGURATION DES FICHIERS ----------
 
 // Identification des différents types de fichiers acceptés
 const MIME_TYPES = {
@@ -22,5 +25,6 @@ const storage = multer.diskStorage({
     }
 })
 
-// Exportation du middleware multer
+
+// EXPORTATION ----------
 module.exports = multer({storage}).single('image');
