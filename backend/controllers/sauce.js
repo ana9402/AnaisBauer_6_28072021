@@ -17,11 +17,59 @@ exports.createSauce = (req, res, next) => {
         usersLiked: [],
         usersDisliked: []
     });
-    console.log(req.body)
     sauce.save()
     .then(() => res.status(201).json({message: "Sauce enregistrée !"}))
     .catch(error => res.status(400).json({error}));
 }
+
+// POST : Liker/Disliker une sauce
+exports.rateSauce = (req, res, next) => {
+    Sauce.findOne({_id: req.params.id})
+    .then(sauce => {
+        const like = req.body.like;
+        const user = req.body.userId;
+        // Si l'utilisateur like la sauce
+        if (like === 1) {
+            sauce.likes++;
+            sauce.usersLiked.push(user);
+        }
+        // Si l'utilisateur dislike la sauce
+        if (like === -1) {
+            sauce.dislikes++;
+            sauce.usersDisliked.push(user);
+        }
+        // Si l'utilisateur retire son évaluation
+        if (like === 0) {
+            // S'il retire un like
+            if (sauce.usersLiked.includes(user)) {
+                sauce.likes--;
+                const index = sauce.usersLiked.indexOf(user);
+                sauce.usersLiked.splice(index, 1);
+            }
+            // S'il retire un dislike
+            if (sauce.usersDisliked.includes(user)) {
+                sauce.dislikes--;
+                const index = sauce.usersDisliked.indexOf(user);
+                sauce.usersDisliked.splice(index, 1);
+            }
+        }
+        // On sauvegarde les changements dans la base de données
+        Sauce.updateOne(
+            {_id: req.params.id},
+            {
+            likes: sauce.likes,
+            dislikes: sauce.dislikes,
+            usersLiked: sauce.usersLiked,
+            usersDisliked: sauce.usersDisliked,
+            _id: req.params.id
+            }
+        )
+        .then(()=> res.status(200).json({message: "L'évaluation de la sauce a bien été mise à jour !"}))
+        .catch(error => res.status(400).json({error}));
+    })
+    .catch(error => res.status(404).json({error}));
+}
+
 
 // PUT : Modifier une sauce
 exports.modifySauce = (req, res, next) => {
@@ -30,7 +78,12 @@ exports.modifySauce = (req, res, next) => {
         ...JSON.parse(req.body.sauce),
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     } : { ...req.body };
-    Sauce.updateOne({_id: req.params.id}, {...sauceObject,_id: req.params.id})
+    Sauce.updateOne(
+        {_id: req.params.id},{
+            ...sauceObject,
+        _id: req.params.id
+        }
+    )
     .then(()=> res.status(200).json({message: "Sauce modifiée !"}))
     .catch(error => res.status(400).json({error}));
 }
