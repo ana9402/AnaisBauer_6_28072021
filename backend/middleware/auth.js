@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
     try {
         const token = req.headers.authorization.split(' ')[1]; // Récupération du token envoyé
-        const decodedToken = jwt.verify(token, 'RANDOM_TOKEN_SECRET'); // On compare le token envoyé à celui encodé
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET); // On compare le token envoyé à celui encodé
         const userId = decodedToken.userId;
         // Si l'ID utilisateur ne correspond pas
         if(req.body.userId && req.body.userId !== userId) {

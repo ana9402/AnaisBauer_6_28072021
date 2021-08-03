@@ -3,13 +3,15 @@ const express = require('express'); // Framework pour le développement du serve
 const mongoose = require('mongoose'); // Bibliothèque ODM pour la création des schémas
 const helmet = require('helmet'); // Package pour la sécurisation des headers HTTP
 const path = require('path'); // Module NodeJS pour la gestion des chemins d'accès à des fichiers
+require('dotenv').config(); // Module pour le chargement de variables depuis le fichier .env
+
 // Routes
 const sauceRoutes = require('./routes/sauce');
 const userRoutes = require('./routes/user');
 
 
 // CONNEXION A LA BASE DE DONNEES ----------
-mongoose.connect('mongodb+srv://website:WQxCxfsDGIHGAluc@cluster0.fjllj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority', 
+mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.fjllj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, 
     {useNewUrlParser: true,
     useUnifiedTopology: true }
 )
