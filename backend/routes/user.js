@@ -2,10 +2,10 @@
 const express = require('express');
 const router = express.Router();
 const userCtrl = require('../controllers/user');
-
+const passwordValidation = require('../middleware/passwordValidation')
 
 // ROUTES ----------
-router.post('/signup', userCtrl.signup);
+router.post('/signup', passwordValidation, userCtrl.signup);
 router.post('/login', userCtrl.login);
 
 
