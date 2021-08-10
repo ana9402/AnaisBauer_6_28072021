@@ -13,11 +13,10 @@ const userRoutes = require('./routes/user');
 // CONNEXION A LA BASE DE DONNEES ----------
 mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.fjllj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, 
     {useNewUrlParser: true,
-    useUnifiedTopology: true }
+    useUnifiedTopology: true,}
 )
 .then(() => console.log('Connected to MongoDB !'))
 .catch(() => console.log('Connection to MongoDB failed !'));
-
 
 // CREATION DE L'APPLICATION EXPRESS ----------
 const app = express();
