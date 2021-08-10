@@ -3,6 +3,8 @@ const express = require('express'); // Framework pour le développement du serve
 const mongoose = require('mongoose'); // Bibliothèque ODM pour la création des schémas
 const helmet = require('helmet'); // Package pour la sécurisation des headers HTTP
 const path = require('path'); // Module NodeJS pour la gestion des chemins d'accès à des fichiers
+const morgan = require('morgan'); // Journaux de données des requêtes HTTP
+const fs = require('fs'); // File System : gestionnaire de fichiers
 require('dotenv').config(); // Module pour le chargement de variables depuis le fichier .env
 
 // Routes
@@ -32,8 +34,13 @@ app.use((req, res, next) => {
     next();
 });
 
+// Configuration de morgan
+var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
+morgan.token('id', (req) => req.params.id);
+
 // Intégrations des routes
 app.use(express.json());
+app.use(morgan(':id - :remote-addr - :remote-user [:date[clf]] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"', { stream: accessLogStream }));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use('/api/sauces', sauceRoutes);
 app.use('/api/auth', userRoutes);
