@@ -4,18 +4,27 @@ const User = require('../models/user'); // Schéma User
 const bcrypt = require('bcrypt'); // Hachage des mots de passe
 const jwt = require('jsonwebtoken'); // Echange sécurisé de tokens
 const mongoose = require('mongoose');
-const { RateLimiterMongo } = require('rate-limiter-flexible');
+const CryptoJS = require('crypto-js'); // Cryptage des adresses mails dans la BDD
+const { RateLimiterMongo } = require('rate-limiter-flexible'); // Limitation du nombre de tentatives de connexion
 
 // ROUTES ----------
 
+// Regex de l'adresse email
+const emailRegex = (email) => /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(email);
+
 // Inscription d'un utilisateur ---
 exports.signup = (req, res, next) => {
-    // Cryptage du mot de passe saisi (hash + salage)
+
+    if (!emailRegex(req.body.email)) {
+        res.status(400).json({message: "Le format de l'email n'est pas valide."})
+    } else {
+    const cryptedEmail = CryptoJS.HmacSHA1(req.body.email, process.env.CRYPTO_SECRET).toString();
+        // Cryptage du mot de passe saisi (hash + salage)
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
         // Création d'un nouvel utilisateur
         const user = new User({
-            email: req.body.email,
+            email: cryptedEmail,
             password: hash
         });
         // Enregistrement de l'utilisateur dans la BDD
@@ -24,8 +33,9 @@ exports.signup = (req, res, next) => {
         .catch(error => res.status(500).json({error}));
     })
     .catch(error => res.status(500).json({error}));
-}
 
+    }
+}
 // Connexion de d'un utilisateur déjà enregistré ---
 
 // Configurations pour la BDD
@@ -44,8 +54,10 @@ const getUsernameIPkey = (username, ip) => `${username}_${ip}`;
 
 // Route login
 exports.login = (req, res, next) => {
+
+    const cryptedEmail = CryptoJS.HmacSHA1(req.body.email, process.env.CRYPTO_SECRET).toString();
     // Recherche de l'utilisateur dans la BDD
-    User.findOne({email:req.body.email})
+    User.findOne({email: cryptedEmail})
     .then(user => {
         // Si l'utilisateur n'existe pas
         if(!user) {
