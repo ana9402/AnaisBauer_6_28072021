@@ -30,13 +30,17 @@ exports.rateSauce = (req, res, next) => {
         const user = req.body.userId;
         // Si l'utilisateur like la sauce
         if (like === 1) {
-            sauce.likes++;
-            sauce.usersLiked.push(user);
+            if (!sauce.usersLiked.includes(user)) {
+                sauce.likes++;
+                sauce.usersLiked.push(user);
+            }
         }
         // Si l'utilisateur dislike la sauce
         if (like === -1) {
-            sauce.dislikes++;
-            sauce.usersDisliked.push(user);
+            if (sauce.usersDisliked.includes(user)) {
+                sauce.dislikes++;
+                sauce.usersDisliked.push(user);
+            }
         }
         // Si l'utilisateur retire son évaluation
         if (like === 0) {
