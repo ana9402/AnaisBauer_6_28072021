@@ -13,7 +13,7 @@ const userRoutes = require('./routes/user');
 
 
 // CONNEXION A LA BASE DE DONNEES ----------
-mongoose.connect(`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.fjllj.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`, 
+mongoose.connect(`${process.env.DATABASE}`, 
     {useNewUrlParser: true,
     useUnifiedTopology: true,}
 )
