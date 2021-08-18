@@ -37,7 +37,7 @@ exports.rateSauce = (req, res, next) => {
         }
         // Si l'utilisateur dislike la sauce
         if (like === -1) {
-            if (sauce.usersDisliked.includes(user)) {
+            if (!sauce.usersDisliked.includes(user)) {
                 sauce.dislikes++;
                 sauce.usersDisliked.push(user);
             }
